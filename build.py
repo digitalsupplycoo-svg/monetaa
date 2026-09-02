@@ -186,7 +186,7 @@ def build_index():
   {nav()}
   <div class="hero-mid">
     <div class="hero-title-clip">
-      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">mind your money</h1>
+      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">B7bk Ya Marwa🫀</h1>
     </div>
     <img class="hero-art magnet reveal" style="--d:.6s" data-magnet data-magnet-pad="150"
          data-magnet-strength="3" src="/img/hero-orb.svg" alt="" aria-hidden="true">
