@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Income and budget calculator — Moneta</title>
+<meta name="description" content="Convert hourly, weekly, monthly and annual pay after deductions, split take-home pay into needs, wants and savings, and see how long a savings goal takes.">
+<link rel="canonical" href="https://moneta.tools/income-calculator">
+<meta name="theme-color" content="#0C0C0C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Moneta">
+<meta property="og:title" content="Income and budget calculator — Moneta">
+<meta property="og:description" content="Convert hourly, weekly, monthly and annual pay after deductions, split take-home pay into needs, wants and savings, and see how long a savings goal takes.">
+<meta property="og:url" content="https://moneta.tools/income-calculator">
+<meta property="og:image" content="https://moneta.tools/img/art-income.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Income and budget calculator — Moneta">
+<meta name="twitter:description" content="Convert hourly, weekly, monthly and annual pay after deductions, split take-home pay into needs, wants and savings, and see how long a savings goal takes.">
+<meta name="twitter:image" content="https://moneta.tools/img/art-income.svg">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<!-- AdSense: uncomment after your account is approved and the publisher ID is filled in.
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
+-->
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+<nav class="nav reveal" style="--ry:-20px">
+<a class="brand" href="/">Moneta</a>
+<ul><li><a href="/loan-calculator">Loans</a></li><li><a href="/income-calculator" aria-current=page>Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/about">About</a></li></ul>
+</nav>
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal">Income calculator</h1>
+  <p class="reveal" style="--d:.1s">Turn any pay figure into every other one, split your take-home
+  pay into needs, wants and savings, and see how long your goal takes at the rate you are actually
+  saving.</p>
+</header>
+
+<div class="calc wrap">
+  <form class="panel" id="income-form" autocomplete="off">
+    <h2>Your pay</h2>
+    <div class="field">
+      <label for="currency">Currency</label>
+      <div class="control"><select id="currency"></select></div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="amount">Amount</label>
+        <div class="control"><input id="amount" type="number" min="0" step="100" value="8000" inputmode="decimal"></div>
+      </div>
+      <div class="field">
+        <label for="period">Per</label>
+        <div class="control"><select id="period">
+          <option value="hour">Hour</option><option value="day">Day</option>
+          <option value="week">Week</option><option value="month" selected>Month</option>
+          <option value="year">Year</option></select></div>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="hours">Hours a week</label>
+        <div class="control"><input id="hours" type="number" min="1" max="90" step="1" value="40"></div>
+      </div>
+      <div class="field">
+        <label for="weeks">Paid weeks a year</label>
+        <div class="control"><input id="weeks" type="number" min="1" max="52" step="1" value="52"></div>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="deductions">Deductions</label>
+        <div class="control"><span class="unit">%</span><input id="deductions" type="number" min="0" max="90" step="0.5" value="0"></div>
+      </div>
+      <div class="field">
+        <label for="other">Other income / month</label>
+        <div class="control"><input id="other" type="number" min="0" step="50" value="0"></div>
+      </div>
+    </div>
+    <p class="note">Deductions is a single percentage covering income tax, social contributions and
+    anything else taken before the money reaches you. Rates differ by country and by bracket, so
+    check your own payslip rather than assuming a figure.</p>
+
+    <h2 style="margin-top:2rem">Budget split</h2>
+    <div class="field">
+      <label for="needs">Needs <output id="needs-out">50%</output></label>
+      <input type="range" id="needs" min="20" max="80" step="1" value="50">
+    </div>
+    <div class="field">
+      <label for="wants">Wants <output id="wants-out">30%</output></label>
+      <input type="range" id="wants" min="0" max="60" step="1" value="30">
+    </div>
+    <p class="note">Whatever is left over is your savings share: <output id="save-out">20%</output>.</p>
+
+    <h2 style="margin-top:2rem">Savings goal</h2>
+    <div class="row-2">
+      <div class="field">
+        <label for="goal">Target amount</label>
+        <div class="control"><input id="goal" type="number" min="0" step="500" value="30000"></div>
+      </div>
+      <div class="field">
+        <label for="return">Return a year</label>
+        <div class="control"><span class="unit">%</span><input id="return" type="number" min="0" max="20" step="0.25" value="4"></div>
+      </div>
+    </div>
+  </form>
+
+  <div>
+    <section class="result">
+      <p class="eyebrow">Take-home each month</p>
+      <p class="headline-figure" id="r-monthly">&mdash;</p>
+      <dl class="stats">
+        <div class="stat"><dt>Gross a year</dt><dd id="r-gross">&mdash;</dd></div>
+        <div class="stat"><dt>Net a year</dt><dd id="r-net">&mdash;</dd></div>
+        <div class="stat"><dt>Deducted a year</dt><dd id="r-tax">&mdash;</dd></div>
+        <div class="stat"><dt>Net a week</dt><dd id="r-weekly">&mdash;</dd></div>
+        <div class="stat"><dt>Net an hour</dt><dd id="r-hourly">&mdash;</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel" id="budget" style="margin-top:clamp(16px,2.4vw,28px)">
+      <h2>Where the money goes</h2>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">
+        <div style="position:relative;flex:0 0 auto;width:min(260px,72vw)">
+          <svg id="donut" aria-label="Budget split between needs, wants and savings"></svg>
+          <p style="position:absolute;inset:0;display:grid;place-content:center;text-align:center;font-weight:500;font-size:1.15rem"
+             id="donut-center">&mdash;</p>
+        </div>
+        <dl class="stats" style="flex:1 1 220px;margin-top:0">
+          <div class="stat"><dt>Needs</dt><dd id="b-needs">&mdash;</dd></div>
+          <div class="stat"><dt>Wants</dt><dd id="b-wants">&mdash;</dd></div>
+          <div class="stat"><dt>Savings</dt><dd class="pos" id="b-save">&mdash;</dd></div>
+        </dl>
+      </div>
+      <p class="legend"><span><i style="background:#8FD9F0"></i>Needs</span>
+      <span><i style="background:#E9C25C"></i>Wants</span>
+      <span><i style="background:#7CE0A6"></i>Savings</span></p>
+    </section>
+
+    <section class="panel" id="goal" style="margin-top:clamp(16px,2.4vw,28px)">
+      <h2>Time to reach your goal</h2>
+      <p class="headline-figure" style="font-size:clamp(2rem,6vw,3.4rem)" id="r-goal">&mdash;</p>
+      <p class="note" id="goal-note"></p>
+      <svg class="chart" id="chart" aria-label="Savings growth over ten years"></svg>
+      <p class="legend"><span><i style="background:#8FD9F0"></i>Money you put in</span>
+      <span><i style="background:#7CE0A6"></i>With compounding</span></p>
+    </section>
+  </div>
+</div>
+
+<aside class="ad-slot" aria-label="Advertisement">
+<!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-0000000000000000"
+     data-ad-slot="4444444444" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+</aside>
+
+<section class="wrap" style="max-width:900px;margin-bottom:clamp(50px,8vw,90px)">
+  <h2 class="display" style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.8em">Comparing two offers properly</h2>
+  <p style="line-height:1.8;opacity:.85;margin-bottom:1.1em">Job offers are rarely quoted on the same
+  basis. One is hourly, another is monthly, a third is annual with a bonus attached. Converting all
+  of them to the same unit, after deductions, is the only way to see which one actually pays more.</p>
+  <p style="line-height:1.8;opacity:.85">Then adjust for the hours. A monthly salary that assumes
+  fifty hours a week is a different job from one that assumes thirty-five, even when the annual
+  figures match. The net hourly figure above is the number that makes them comparable.</p>
+</section>
+</main><footer class="footer">
+<div>
+  <span class="brand">Moneta</span>
+  <p class="small">Free loan and income calculators and plain-English guides to keeping more of
+  what you earn. Everything runs in your browser: no sign-up, no data leaves your device.</p>
+</div>
+<div><h4>Calculators</h4><ul><li><a href="/loan-calculator">Loan repayment</a></li><li><a href="/loan-calculator#schedule">Amortisation table</a></li><li><a href="/income-calculator">Income and budget</a></li><li><a href="/income-calculator#goal">Savings goal</a></li></ul></div><div><h4>Guides</h4><ul><li><a href="/guides/">All guides</a></li><li><a href="/guides/emergency-fund">Emergency fund</a></li><li><a href="/guides/budget-50-30-20">The 50/30/20 budget</a></li><li><a href="/guides/pay-off-debt-faster">Paying off debt</a></li><li><a href="/guides/compound-interest">Compound interest</a></li></ul></div><div><h4>Site</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/privacy">Privacy policy</a></li><li><a href="/terms">Terms of use</a></li><li><a href="/disclaimer">Editorial disclaimer</a></li></ul></div>
+<div class="copyright">&copy; <span data-year>2026</span> Moneta. Educational information only,
+not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
+</footer>
+<script src="/assets/site.js" defer></script><script src="/assets/money.js" defer></script><script src="/assets/income.js" defer></script>
+</body>
+</html>

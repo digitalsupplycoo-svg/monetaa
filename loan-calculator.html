@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan calculator with amortisation schedule — Moneta</title>
+<meta name="description" content="Free loan repayment calculator: monthly payment, total interest, full amortisation table and the savings from paying extra each month. Works in 18 currencies.">
+<link rel="canonical" href="https://moneta.tools/loan-calculator">
+<meta name="theme-color" content="#0C0C0C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Moneta">
+<meta property="og:title" content="Loan calculator with amortisation schedule — Moneta">
+<meta property="og:description" content="Free loan repayment calculator: monthly payment, total interest, full amortisation table and the savings from paying extra each month. Works in 18 currencies.">
+<meta property="og:url" content="https://moneta.tools/loan-calculator">
+<meta property="og:image" content="https://moneta.tools/img/art-loan.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Loan calculator with amortisation schedule — Moneta">
+<meta name="twitter:description" content="Free loan repayment calculator: monthly payment, total interest, full amortisation table and the savings from paying extra each month. Works in 18 currencies.">
+<meta name="twitter:image" content="https://moneta.tools/img/art-loan.svg">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<!-- AdSense: uncomment after your account is approved and the publisher ID is filled in.
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
+-->
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+<nav class="nav reveal" style="--ry:-20px">
+<a class="brand" href="/">Moneta</a>
+<ul><li><a href="/loan-calculator" aria-current=page>Loans</a></li><li><a href="/income-calculator">Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/about">About</a></li></ul>
+</nav>
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal">Loan calculator</h1>
+  <p class="reveal" style="--d:.1s">Work out the monthly payment on any fixed-rate loan, see the
+  full interest bill before you sign, and check what one extra payment a month would do to the
+  term. Everything is calculated in your browser.</p>
+</header>
+
+<div class="calc wrap">
+  <form class="panel" id="loan-form" autocomplete="off">
+    <h2>Loan details</h2>
+    <div class="field">
+      <label for="currency">Currency</label>
+      <div class="control"><select id="currency"></select></div>
+    </div>
+    <div class="field">
+      <label for="amount">Amount borrowed</label>
+      <div class="control"><span class="unit">Total</span><input id="amount" type="number" min="0" step="100" value="250000" inputmode="decimal"></div>
+    </div>
+    <div class="field">
+      <label for="rate">Annual interest rate</label>
+      <div class="control"><span class="unit">%</span><input id="rate" type="number" min="0" max="60" step="0.05" value="5.5" inputmode="decimal"></div>
+      <input type="range" id="rate-range" min="0" max="20" step="0.05" value="5.5" aria-label="Interest rate slider">
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="years">Term (years)</label>
+        <div class="control"><input id="years" type="number" min="1" max="40" step="1" value="25"></div>
+      </div>
+      <div class="field">
+        <label for="extra">Extra per month</label>
+        <div class="control"><input id="extra" type="number" min="0" step="25" value="0"></div>
+      </div>
+    </div>
+    <p class="note">A fixed rate is assumed for the whole term. Fees, insurance and early-repayment
+    charges are not included, so treat the result as the arithmetic of the loan rather than the
+    final cost of the deal.</p>
+  </form>
+
+  <div>
+    <section class="result">
+      <p class="eyebrow">Contractual monthly payment</p>
+      <p class="headline-figure" id="r-payment">&mdash;</p>
+      <p class="note" id="warn" hidden></p>
+      <dl class="stats">
+        <div class="stat"><dt>Total interest</dt><dd id="r-interest">&mdash;</dd></div>
+        <div class="stat"><dt>Total repaid</dt><dd id="r-total">&mdash;</dd></div>
+        <div class="stat"><dt>Interest vs. loan</dt><dd id="r-ratio">&mdash;</dd></div>
+        <div class="stat"><dt>Paid off in</dt><dd id="r-term">&mdash;</dd></div>
+      </dl>
+      <dl class="stats" id="saved-box" hidden>
+        <div class="stat"><dt>Interest saved by paying extra</dt><dd class="pos" id="r-saved">&mdash;</dd></div>
+        <div class="stat"><dt>Debt-free</dt><dd class="pos" id="r-sooner">&mdash;</dd></div>
+        <div class="stat"><dt>You actually pay monthly</dt><dd id="r-outlay">&mdash;</dd></div>
+      </dl>
+      <svg class="chart" id="chart" aria-label="Remaining balance over the life of the loan"></svg>
+      <p class="legend"><span><i style="background:#8FD9F0"></i>Balance on the standard payment</span>
+      <span id="legend-extra" hidden><i style="background:#7CE0A6"></i>Balance with the extra payment</span></p>
+    </section>
+
+    <section class="panel" id="schedule" style="margin-top:clamp(16px,2.4vw,28px)">
+      <h2>Amortisation schedule</h2>
+      <div class="toggle">
+        <button type="button" data-view="year" aria-pressed="true">By year</button>
+        <button type="button" data-view="month" aria-pressed="false">By month</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Period</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+          <tbody id="sched"></tbody>
+        </table>
+      </div>
+      <p class="note">Early payments are mostly interest because interest is charged on the balance
+      you still owe. As the balance falls, the same payment buys you more principal, which is why
+      overpaying early is worth far more than overpaying late.</p>
+    </section>
+  </div>
+</div>
+
+<aside class="ad-slot" aria-label="Advertisement">
+<!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-0000000000000000"
+     data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+</aside>
+
+<section class="wrap" style="max-width:900px;margin-bottom:clamp(50px,8vw,90px)">
+  <h2 class="display" style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.8em">How the payment is worked out</h2>
+  <p style="line-height:1.8;opacity:.85;margin-bottom:1.1em">A fixed-rate loan uses one formula. The
+  monthly payment is the amount that reduces the balance to exactly zero over the term, given the
+  monthly interest rate. Written out, the payment equals the principal multiplied by the monthly
+  rate, divided by one minus (one plus the monthly rate) raised to the power of minus the number of
+  months.</p>
+  <p style="line-height:1.8;opacity:.85;margin-bottom:1.1em">The monthly rate is the annual rate
+  divided by twelve. Every month the lender charges interest on whatever you still owe, and the rest
+  of your payment reduces the balance. That is the whole mechanism, and it is why two loans with the
+  same monthly payment can cost wildly different amounts once the term changes.</p>
+  <p style="line-height:1.8;opacity:.85">Stretching a loan over more years lowers the payment and
+  raises the total interest, sometimes by more than the original amount borrowed. Shortening it does
+  the reverse. Try both in the calculator above before you decide which trade you want.</p>
+</section>
+</main><footer class="footer">
+<div>
+  <span class="brand">Moneta</span>
+  <p class="small">Free loan and income calculators and plain-English guides to keeping more of
+  what you earn. Everything runs in your browser: no sign-up, no data leaves your device.</p>
+</div>
+<div><h4>Calculators</h4><ul><li><a href="/loan-calculator">Loan repayment</a></li><li><a href="/loan-calculator#schedule">Amortisation table</a></li><li><a href="/income-calculator">Income and budget</a></li><li><a href="/income-calculator#goal">Savings goal</a></li></ul></div><div><h4>Guides</h4><ul><li><a href="/guides/">All guides</a></li><li><a href="/guides/emergency-fund">Emergency fund</a></li><li><a href="/guides/budget-50-30-20">The 50/30/20 budget</a></li><li><a href="/guides/pay-off-debt-faster">Paying off debt</a></li><li><a href="/guides/compound-interest">Compound interest</a></li></ul></div><div><h4>Site</h4><ul><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/privacy">Privacy policy</a></li><li><a href="/terms">Terms of use</a></li><li><a href="/disclaimer">Editorial disclaimer</a></li></ul></div>
+<div class="copyright">&copy; <span data-year>2026</span> Moneta. Educational information only,
+not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
+</footer>
+<script src="/assets/site.js" defer></script><script src="/assets/money.js" defer></script><script src="/assets/loan.js" defer></script>
+</body>
+</html>
