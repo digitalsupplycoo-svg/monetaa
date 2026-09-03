@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://moneta.tools/sitemap.xml
+Sitemap: https://monetaa.online/sitemap.xml

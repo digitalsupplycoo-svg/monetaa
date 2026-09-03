@@ -3,7 +3,7 @@
 import os, re, datetime
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SITE = "https://moneta.tools"          # <- replace with your real domain
+SITE = "https://monetaa.online"
 BRAND = "Moneta"
 TODAY = "2026-09-02"
 
@@ -184,7 +184,7 @@ def build_index():
   {nav()}
   <div class="hero-mid">
     <div class="hero-title-clip">
-      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">B7bk Ya Marwa </h1>
+      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">MIND MY MONEY</h1>
     </div>
     <img class="hero-art magnet reveal" style="--d:.6s" data-magnet data-magnet-pad="150"
          data-magnet-strength="3" src="/img/hero-orb.svg" alt="" aria-hidden="true">
@@ -902,14 +902,14 @@ via the <a href="/contact">contact page</a>.</p>
 simple("contact.html", "Contact Moneta", "How to reach Moneta about corrections, questions or advertising.", "Contact", """
 <p>The fastest way to reach us is by email.</p>
 <h2>General and corrections</h2>
-<p><a href="mailto:hello@moneta.tools">hello@moneta.tools</a> \u2014 questions about a calculator, a
+<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 questions about a calculator, a
 suspected error in an article, or a suggestion for something to build. Corrections are prioritised;
 if a formula is wrong we want to know before anyone else relies on it.</p>
 <h2>Privacy requests</h2>
-<p><a href="mailto:privacy@moneta.tools">privacy@moneta.tools</a> \u2014 requests about data,
+<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 requests about data,
 cookies or advertising preferences.</p>
 <h2>Advertising</h2>
-<p><a href="mailto:ads@moneta.tools">ads@moneta.tools</a> \u2014 display advertising enquiries. We do
+<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 display advertising enquiries. We do
 not sell links, sponsored posts or product placement inside guides.</p>
 <h2>What we cannot do</h2>
 <p>We cannot give personal financial advice, review your specific loan agreement, or tell you what to
@@ -949,7 +949,7 @@ It is not used to identify individuals.</p>
 <h2>Your rights</h2>
 <p>Depending on where you live you may have the right to access, correct or delete personal data we
 hold, to object to processing, or to withdraw consent. Because we hold almost nothing, most requests
-resolve quickly. Write to <a href="mailto:privacy@moneta.tools">privacy@moneta.tools</a>.</p>
+resolve quickly. Write to <a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a>.</p>
 <h2>Children</h2>
 <p>This site is not directed at children under 13 and we do not knowingly collect their data.</p>
 <h2>Changes</h2>
@@ -982,7 +982,7 @@ with a link back are welcome.</p>
 liable for losses arising from decisions made on the basis of information or calculations found
 here.</p>
 <h2>Contact</h2>
-<p>Questions about these terms: <a href="mailto:hello@moneta.tools">hello@moneta.tools</a>.</p>
+<p>Questions about these terms: <a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a>.</p>
 """)
 
 simple("disclaimer.html", "Editorial disclaimer \u2014 Moneta", "Why Moneta is information rather than financial advice, and how the content is produced.", "Editorial disclaimer", """
@@ -1035,8 +1035,7 @@ def build_meta():
           '<?xml version="1.0" encoding="UTF-8"?>\n'
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + items + '</urlset>')
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n")
-    write("ads.txt", "# Replace with the line AdSense gives you after approval:\n"
-                     "# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0\n")
+    write("ads.txt", f"google.com, {ADSENSE_CLIENT.removeprefix('ca-')}, DIRECT, f08c47fec0942fa0\n")
     write("site.webmanifest",
           '{"name":"Moneta","short_name":"Moneta","start_url":"/","display":"standalone",'
           '"background_color":"#0C0C0C","theme_color":"#0C0C0C",'
