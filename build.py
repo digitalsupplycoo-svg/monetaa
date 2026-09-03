@@ -25,7 +25,7 @@ FOOT = {
              ("/disclaimer", "Editorial disclaimer")],
 }
 
-ADSENSE_CLIENT = "ca-pub-0000000000000000"   # <- replace after AdSense approval
+ADSENSE_CLIENT = "ca-pub-5834688335918066"   # <- replace after AdSense approval
 
 
 def head(title, desc, path, image="/img/og.png"):
@@ -57,9 +57,7 @@ def head(title, desc, path, image="/img/og.png"):
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/base.css">
-<!-- AdSense: uncomment after your account is approved and the publisher ID is filled in.
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>
--->
 </head>
 <body>
 <a class="sr" href="#main">Skip to content</a>
