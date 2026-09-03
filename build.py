@@ -900,22 +900,22 @@ via the <a href="/contact">contact page</a>.</p>
 """)
 
 simple("contact.html", "Contact Moneta", "How to reach Moneta about corrections, questions or advertising.", "Contact", """
-<p>The fastest way to reach us is by email.</p>
-<h2>General and corrections</h2>
-<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 questions about a calculator, a
-suspected error in an article, or a suggestion for something to build. Corrections are prioritised;
-if a formula is wrong we want to know before anyone else relies on it.</p>
-<h2>Privacy requests</h2>
-<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 requests about data,
-cookies or advertising preferences.</p>
-<h2>Advertising</h2>
-<p><a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a> \u2014 display advertising enquiries. We do
-not sell links, sponsored posts or product placement inside guides.</p>
+<p>We appreciate feedback. Found an error? Have a suggestion? Want to advertise with us?</p>
+<h2>Corrections and suggestions</h2>
+<p>If you've spotted an error in a calculator or guide, or have a suggestion for something new,
+we want to hear it. Corrections are prioritised \u2014 if a formula is wrong we want to know
+before anyone else relies on it.</p>
+<h2>Privacy and data</h2>
+<p>Questions about privacy, cookies, or how your data is used? Check our
+<a href="/privacy">privacy policy</a> for details. Everything runs in your browser and nothing is sent to our servers.</p>
+<h2>Advertising and partnerships</h2>
+<p>Interested in advertising with us or partnering? We do not sell links, sponsored posts or product
+placement inside guides. Moneta is supported by Google AdSense.</p>
 <h2>What we cannot do</h2>
 <p>We cannot give personal financial advice, review your specific loan agreement, or tell you what to
 invest in. Those require a licensed adviser who knows your full circumstances. See the
 <a href="/disclaimer">editorial disclaimer</a>.</p>
-<p>We usually reply within a few working days.</p>
+<p><strong>Thank you for using Moneta.</strong></p>
 """)
 
 simple("privacy.html", "Privacy policy \u2014 Moneta", "What Moneta collects, what it does not, and how advertising and analytics cookies are used.", "Privacy policy", """
@@ -949,7 +949,7 @@ It is not used to identify individuals.</p>
 <h2>Your rights</h2>
 <p>Depending on where you live you may have the right to access, correct or delete personal data we
 hold, to object to processing, or to withdraw consent. Because we hold almost nothing, most requests
-resolve quickly. Write to <a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a>.</p>
+resolve quickly.</p>
 <h2>Children</h2>
 <p>This site is not directed at children under 13 and we do not knowingly collect their data.</p>
 <h2>Changes</h2>
@@ -982,7 +982,7 @@ with a link back are welcome.</p>
 liable for losses arising from decisions made on the basis of information or calculations found
 here.</p>
 <h2>Contact</h2>
-<p>Questions about these terms: <a href="mailto:digitalsupplycoo@gmail.com">digitalsupplycoo@gmail.com</a>.</p>
+<p>Questions about these terms? See our <a href="/contact">contact page</a>.</p>
 """)
 
 simple("disclaimer.html", "Editorial disclaimer \u2014 Moneta", "Why Moneta is information rather than financial advice, and how the content is produced.", "Editorial disclaimer", """
