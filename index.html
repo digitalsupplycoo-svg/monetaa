@@ -33,8 +33,18 @@
 <section class="hero">
   <nav class="nav reveal" style="--ry:-20px">
 <a class="brand" href="/">Moneta</a>
-<ul><li><a href="/loan-calculator">Loans</a></li><li><a href="/income-calculator">Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/about">About</a></li></ul>
+<ul><li><a href="/loan-calculator">Loans</a></li><li><a href="/income-calculator">Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/about">About</a></li><li><a href="/blog/">Blog</a></li></ul>
+<button class="search-trigger" type="button" data-search-trigger aria-label="Search">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+</button>
 </nav>
+<div class="search-overlay" data-search-overlay>
+<div class="search-box">
+<input type="text" data-search-input placeholder="Search calculators, guides, blog…" autocomplete="off">
+<div class="search-results" data-search-results></div>
+</div>
+</div>
   <div class="hero-mid">
     <div class="hero-title-clip">
       <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">MIND YOUR MONEY</h1>
@@ -134,5 +144,6 @@
 not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
 </footer>
 <script src="/assets/site.js" defer></script>
+<script src="/assets/search.js" defer></script>
 </body>
 </html>

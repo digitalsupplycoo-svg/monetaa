@@ -1,8 +1,23 @@
 #!/usr/bin/env python3
 """Builds the Moneta static site. Run: python3 build.py"""
-import os, re, datetime
+import os, re, datetime, json, html, urllib.request, urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_env_local():
+    path = os.path.join(ROOT, ".env.local")
+    if not os.path.exists(path):
+        return
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+_load_env_local()
 SITE = "https://monetaa.online"
 BRAND = "Moneta"
 TODAY = "2026-09-02"
@@ -71,7 +86,17 @@ def nav(active=""):
     return f"""<nav class="nav reveal" style="--ry:-20px">
 <a class="brand" href="/">{BRAND}</a>
 <ul>{links}</ul>
-</nav>"""
+<button class="search-trigger" type="button" data-search-trigger aria-label="Search">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+</button>
+</nav>
+<div class="search-overlay" data-search-overlay>
+<div class="search-box">
+<input type="text" data-search-input placeholder="Search calculators, guides, blog…" autocomplete="off">
+<div class="search-results" data-search-results></div>
+</div>
+</div>"""
 
 
 def ad(slot, label="Advertisement"):
@@ -98,7 +123,8 @@ def footer(extra_js=""):
 <div class="copyright">&copy; <span data-year>2026</span> {BRAND}. Educational information only,
 not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
 </footer>
-<script src="/assets/site.js" defer></script>{js}
+<script src="/assets/site.js" defer></script>
+<script src="/assets/search.js" defer></script>{js}
 </body>
 </html>"""
 
@@ -862,6 +888,170 @@ def build_guide_index():
         "/guides/") + body + footer())
 
 
+# ======================================================================= blog
+def fetch_blog_posts():
+    project = os.environ.get("SANITY_API_PROJECT_ID")
+    dataset = os.environ.get("SANITY_API_DATASET", "production")
+    token = os.environ.get("SANITY_API_READ_TOKEN")
+    if not project:
+        return []
+    query = (
+        '*[_type=="post" && defined(slug.current)]|order(publishedAt desc){'
+        'title,"slug":slug.current,excerpt,body,publishedAt,'
+        '"coverImage":coverImage.asset->url}'
+    )
+    # non-CDN endpoint: avoids a brief propagation lag right after publish,
+    # which matters since the deploy hook triggers this build immediately.
+    url = (f"https://{project}.api.sanity.io/v2024-01-01/data/query/{dataset}"
+           f"?query={urllib.parse.quote(query)}")
+    req = urllib.request.Request(url)
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.load(resp)
+        return [p for p in data.get("result", []) if p.get("title") and p.get("slug")]
+    except Exception as e:
+        print("Warning: could not fetch blog posts:", e)
+        return []
+
+
+def sanity_asset_url(ref, project, dataset):
+    # ref looks like: image-<assetId>-<width>x<height>-<format>
+    parts = ref.split("-")
+    if len(parts) < 4 or parts[0] != "image":
+        return ""
+    fmt = parts[-1]
+    dims = parts[-2]
+    asset_id = "-".join(parts[1:-2])
+    return f"https://cdn.sanity.io/images/{project}/{dataset}/{asset_id}-{dims}.{fmt}"
+
+
+def render_spans(block):
+    mark_defs = {m["_key"]: m for m in block.get("markDefs", []) if m.get("_key")}
+    parts = []
+    for child in block.get("children", []):
+        text = html.escape(child.get("text", ""))
+        open_tags, close_tags = [], []
+        for mark in child.get("marks", []):
+            if mark == "strong":
+                open_tags.append("<strong>"); close_tags.insert(0, "</strong>")
+            elif mark == "em":
+                open_tags.append("<em>"); close_tags.insert(0, "</em>")
+            elif mark == "underline":
+                open_tags.append("<u>"); close_tags.insert(0, "</u>")
+            elif mark in mark_defs and mark_defs[mark].get("_type") == "link":
+                href = html.escape(mark_defs[mark].get("href", "#"))
+                open_tags.append(f'<a href="{href}">'); close_tags.insert(0, "</a>")
+        parts.append("".join(open_tags) + text + "".join(close_tags))
+    return "".join(parts)
+
+
+def portable_text_to_html(blocks, project, dataset):
+    if not blocks:
+        return ""
+    out = []
+    list_stack = []  # [(tag, level), ...] outermost first
+
+    def close_lists_above(level):
+        while list_stack and list_stack[-1][1] >= level:
+            tag, _ = list_stack.pop()
+            out.append(f"</{tag}>")
+
+    for block in blocks:
+        btype = block.get("_type")
+        if btype == "image":
+            ref = block.get("asset", {}).get("_ref", "")
+            url = sanity_asset_url(ref, project, dataset) if ref else ""
+            if url:
+                close_lists_above(1)
+                out.append(f'<img src="{url}" alt="" loading="lazy">')
+            continue
+        if btype != "block":
+            continue
+
+        list_item = block.get("listItem")
+        level = block.get("level", 1)
+        if list_item:
+            tag = "ol" if list_item == "number" else "ul"
+            close_lists_above(level + 1)
+            if not list_stack or list_stack[-1][1] < level:
+                out.append(f"<{tag}>")
+                list_stack.append((tag, level))
+            elif list_stack[-1][0] != tag:
+                out.append(f"</{list_stack.pop()[0]}><{tag}>")
+                list_stack.append((tag, level))
+            out.append(f"<li>{render_spans(block)}</li>")
+            continue
+
+        close_lists_above(1)
+        style = block.get("style", "normal")
+        text = render_spans(block)
+        if style in ("h1", "h2", "h3", "h4"):
+            out.append(f"<{style}>{text}</{style}>")
+        elif style == "blockquote":
+            out.append(f"<blockquote>{text}</blockquote>")
+        else:
+            out.append(f"<p>{text}</p>")
+
+    close_lists_above(1)
+    return "\n".join(out)
+
+
+def build_blog(posts):
+    cards = "".join(
+        f'<a class="gcard" href="/blog/{p["slug"]}">'
+        + (f'<img src="{p["coverImage"]}" alt="" loading="lazy">' if p.get("coverImage") else "")
+        + f'<div class="body"><h3>{p["title"]}</h3><p>{p.get("excerpt", "")}</p></div></a>'
+        for p in posts
+    )
+    body = f"""{nav("/blog/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal">Blog</h1>
+  <p class="reveal" style="--d:.1s">Notes on money, calculators and whatever we are building next.</p>
+</header>
+<div class="grid-cards">{cards}</div>
+{ad("7777777777")}
+</main>"""
+    write("blog/index.html", head(
+        "Blog \u2014 Moneta",
+        "Notes on money, calculators and product updates from Moneta.",
+        "/blog/") + body + footer())
+
+    project = os.environ.get("SANITY_API_PROJECT_ID", "")
+    dataset = os.environ.get("SANITY_API_DATASET", "production")
+    for p in posts:
+        content_html = portable_text_to_html(p.get("body") or [], project, dataset)
+        date_str = (p.get("publishedAt") or "")[:10]
+        cover = p.get("coverImage")
+        ld = f"""<script type="application/ld+json">
+{{"@context":"https://schema.org","@type":"BlogPosting","headline":{json.dumps(p["title"])},
+"description":{json.dumps(p.get("excerpt", ""))},"datePublished":"{p.get('publishedAt', '')}",
+"dateModified":"{p.get('publishedAt', '')}","mainEntityOfPage":"{SITE}/blog/{p['slug']}",
+"author":{{"@type":"Organization","name":"{BRAND}"}},
+"publisher":{{"@type":"Organization","name":"{BRAND}","logo":{{"@type":"ImageObject","url":"{SITE}/img/favicon.svg"}}}}}}
+</script>"""
+        page_body = f"""{nav("/blog/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal" style="font-size:clamp(2rem,6vw,4.6rem);line-height:1.02">{p["title"]}</h1>
+</header>
+<article class="article">
+  {f'<img class="article-hero" src="{cover}" alt="" aria-hidden="true">' if cover else ''}
+  <p class="meta"><span>{date_str}</span><span>Moneta blog</span></p>
+  {content_html}
+</article>
+{ad("8888888888")}
+</main>
+{ld}"""
+        write(f"blog/{p['slug']}.html", head(
+            p["title"] + " \u2014 Moneta",
+            (p.get("excerpt", "") or p["title"])[:160],
+            f"/blog/{p['slug']}",
+            cover or "/img/og.png") + page_body + footer())
+
+
 # ============================================================== simple pages
 def simple(path, title, desc, h1, html):
     body = f"""{nav()}
@@ -1024,13 +1214,16 @@ write("404.html", head("Page not found \u2014 Moneta", "That page does not exist
 
 # ================================================================== metadata
 def build_meta():
-    urls = ["/", "/loan-calculator", "/income-calculator", "/guides/", "/about", "/contact",
-            "/privacy", "/terms", "/disclaimer"] + ["/guides/" + a[0] for a in ARTICLES]
+    page_urls = ["/", "/loan-calculator", "/income-calculator", "/guides/", "/about", "/contact",
+                 "/privacy", "/terms", "/disclaimer", "/blog/"] + ["/guides/" + a[0] for a in ARTICLES]
+    url_dates = [(u, TODAY) for u in page_urls] + [
+        ("/blog/" + p["slug"], (p.get("publishedAt") or TODAY)[:10]) for p in POSTS
+    ]
     items = "".join(
-        f"<url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod>"
-        f"<changefreq>{'weekly' if u in ('/', '/guides/') else 'monthly'}</changefreq>"
+        f"<url><loc>{SITE}{u}</loc><lastmod>{lastmod}</lastmod>"
+        f"<changefreq>{'weekly' if u in ('/', '/guides/', '/blog/') else 'monthly'}</changefreq>"
         f"<priority>{'1.0' if u == '/' else '0.8' if 'calculator' in u else '0.7'}</priority></url>"
-        for u in urls)
+        for u, lastmod in url_dates)
     write("sitemap.xml",
           '<?xml version="1.0" encoding="UTF-8"?>\n'
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + items + '</urlset>')
@@ -1047,9 +1240,37 @@ def build_meta():
           '    }\n  ]\n}')
 
 
+def build_search_index():
+    entries = [{"title": "Moneta — loan and income calculators", "url": "/",
+                "desc": "Free calculators and plain-English guides for loans, pay and saving."}]
+    entries += [{"title": t, "url": h, "desc": d} for _, t, h, d in TOOLS]
+    entries += [{"title": t, "url": f"/guides/{s}", "desc": d} for s, t, d, _, _ in ARTICLES]
+    entries += [{"title": p["title"], "url": f"/blog/{p['slug']}", "desc": p.get("excerpt", "")}
+                for p in POSTS]
+    for href, label in FOOT.get("Site", []):
+        entries.append({"title": label, "url": href, "desc": ""})
+    write("search-index.json", json.dumps(entries, ensure_ascii=False))
+
+
+# fetch blog content once, before any page is written, so nav()/footer() (called
+# by every build_x() below) already see the Blog link and latest posts.
+POSTS = fetch_blog_posts()
+NAV.append(("/blog/", "Blog"))
+if POSTS:
+    FOOT["Blog"] = [("/blog/", "All posts")] + [
+        (f"/blog/{p['slug']}", p["title"]) for p in POSTS[:4]
+    ]
+
 build_index()
 build_loan()
 build_income()
 build_guide_index()
+build_blog(POSTS)
 build_meta()
-print("built", sum(len(f) for _, _, f in os.walk(ROOT)), "files")
+build_search_index()
+_SKIP_DIRS = {"studio", "node_modules", ".git", ".vercel"}
+_file_count = 0
+for _root, _dirs, _files in os.walk(ROOT):
+    _dirs[:] = [d for d in _dirs if d not in _SKIP_DIRS]
+    _file_count += len(_files)
+print("built", _file_count, "files", f"({len(POSTS)} blog posts)")
