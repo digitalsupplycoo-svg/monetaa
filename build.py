@@ -1238,7 +1238,7 @@ def build_meta():
           '  "headers": [\n    {\n      "source": "/(.*)\\\\.(svg|png|css|js)",\n'
           '      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]\n'
           '    }\n  ],\n'
-          '  "crons": [{ "path": "/api/rebuild", "schedule": "*/15 * * * *" }]\n'
+          '  "crons": [{ "path": "/api/rebuild", "schedule": "0 3 * * *" }]\n'
           '}')
 
 
