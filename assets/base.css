@@ -196,6 +196,30 @@ tbody tr:nth-child(odd){background:rgba(215,226,234,.035)}
 .toggle button[aria-pressed=true]{background:var(--mint);color:var(--ink);border-color:var(--mint)}
 .note{font-size:.85rem;opacity:.6;line-height:1.6;margin-top:1.2rem}
 
+/* ---------- tools: dropzone / compare / progress ---------- */
+.dropzone{border:1px dashed var(--line);border-radius:18px;background:#0A0C0A;
+  padding:clamp(28px,5vw,52px) 1.2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.dropzone:hover,.dropzone:focus-visible{border-color:var(--mint)}
+.dropzone.drag-over{border-color:var(--mint);border-style:solid;background:rgba(124,224,166,.06)}
+.dropzone p{margin:0;opacity:.75;font-size:.95rem}
+.dropzone .dz-hint{font-size:.78rem;opacity:.5;margin-top:.4em}
+.dropzone input[type=file]{display:none}
+.dz-filename{font-size:.85rem;opacity:.7;margin-top:.8rem;word-break:break-all}
+
+.compare{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1.4rem}
+@media(min-width:640px){.compare{grid-template-columns:1fr 1fr}}
+.compare figure{margin:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--ink-2)}
+.compare figcaption{padding:.6rem 1rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+.compare .checkered{background-image:repeating-conic-gradient(#1a1c1a 0% 25%,#0c0c0c 0% 50%);
+  background-size:20px 20px}
+.compare img{display:block;width:100%;height:auto;max-height:360px;object-fit:contain}
+
+.progress{margin-top:1.4rem}
+.progress .bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;width:0%;border-radius:999px;transition:width .3s ease;
+  background:linear-gradient(90deg,var(--mint),var(--gold))}
+.progress .label{font-size:.8rem;opacity:.65;margin-top:.5em}
+
 /* ---------- article ---------- */
 .article{max-width:var(--measure);margin:0 auto;padding:0 var(--pad) clamp(50px,8vw,90px)}
 .article-hero{width:100%;height:clamp(160px,26vw,320px);object-fit:cover;

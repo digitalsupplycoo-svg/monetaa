@@ -23,7 +23,7 @@ BRAND = "Moneta"
 TODAY = "2026-09-02"
 
 NAV = [("/loan-calculator", "Loans"), ("/income-calculator", "Income"),
-       ("/guides/", "Guides"), ("/about", "About")]
+       ("/guides/", "Guides"), ("/tools/", "Tools"), ("/about", "About")]
 
 FOOT = {
     "Calculators": [("/loan-calculator", "Loan repayment"),
@@ -35,6 +35,10 @@ FOOT = {
                ("/guides/budget-50-30-20", "The 50/30/20 budget"),
                ("/guides/pay-off-debt-faster", "Paying off debt"),
                ("/guides/compound-interest", "Compound interest")],
+    "Tools": [("/tools/", "All tools"),
+              ("/remove-background", "Remove background"),
+              ("/compress-image", "Compress image"),
+              ("/resize-image", "Resize image")],
     "Site": [("/about", "About"), ("/contact", "Contact"),
              ("/privacy", "Privacy policy"), ("/terms", "Terms of use"),
              ("/disclaimer", "Editorial disclaimer")],
@@ -500,6 +504,204 @@ def build_income():
         "Convert hourly, weekly, monthly and annual pay after deductions, split take-home pay into needs, wants and savings, and see how long a savings goal takes.",
         "/income-calculator", "/img/art-income.svg") + body +
         footer(["/assets/money.js", "/assets/income.js"]))
+
+
+# ============================================================== image tools
+IMAGE_TOOLS = [
+    ("Remove background", "/remove-background",
+     "Erase the background from any photo and download a transparent PNG. The model runs in your browser \u2014 the image never leaves your device."),
+    ("Compress image", "/compress-image",
+     "Shrink a photo to a target file size or quality, in JPEG, PNG or WebP, without uploading it anywhere."),
+    ("Resize image", "/resize-image",
+     "Change the pixel dimensions of an image, with the aspect ratio locked or free, and download the result."),
+]
+
+
+def build_tools_index():
+    cards = "".join(
+        f'<a class="gcard" href="{href}"><div class="body"><h3>{t}</h3><p>{d}</p></div></a>'
+        for t, href, d in IMAGE_TOOLS
+    )
+    body = f"""{nav("/tools/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal">Tools</h1>
+  <p class="reveal" style="--d:.1s">Small image tools that run entirely in your browser \u2014 nothing
+  you drop in here is ever uploaded anywhere.</p>
+</header>
+<div class="grid-cards">{cards}</div>
+{ad("9999999991")}
+</main>"""
+    write("tools/index.html", head(
+        "Free image tools \u2014 Moneta",
+        "Remove backgrounds, compress and resize images for free, entirely in your browser.",
+        "/tools/") + body + footer())
+
+
+def build_remove_background():
+    body = f"""{nav("/tools/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal" style="font-size:clamp(2rem,6vw,4.6rem);line-height:1.02">Remove background</h1>
+  <p class="reveal" style="--d:.1s">Drop in a photo and get back a transparent PNG. The model
+  downloads once and runs in your browser \u2014 the image itself is never sent anywhere.</p>
+</header>
+
+<div class="wrap" id="bgremove-root" style="max-width:900px">
+  <div class="panel">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop an image">
+      <p>Drop an image here, or click to choose one</p>
+      <p class="dz-hint">JPEG, PNG or WebP</p>
+      <p class="dz-filename"></p>
+      <input type="file" accept="image/*">
+    </div>
+    <div class="progress" id="progress" hidden>
+      <div class="bar"><div class="fill"></div></div>
+      <p class="label"></p>
+    </div>
+    <p class="note" id="warn" hidden></p>
+  </div>
+
+  <section class="result" id="bgremove-result" style="margin-top:clamp(16px,2.4vw,28px)" hidden>
+    <p class="eyebrow">Result size</p>
+    <p class="headline-figure" id="r-size" style="font-size:clamp(1.6rem,4vw,2.4rem)">&mdash;</p>
+    <div class="compare">
+      <figure><figcaption>Original</figcaption><img id="img-before" alt=""></figure>
+      <figure class="checkered"><figcaption>Background removed</figcaption><img id="img-after" alt=""></figure>
+    </div>
+    <button class="btn btn-primary" id="download-btn" type="button" style="margin-top:1.4rem">Download PNG</button>
+  </section>
+</div>
+
+{ad("9999999992")}
+</main>"""
+    write("remove-background.html", head(
+        "Remove image background \u2014 free, in your browser \u2014 Moneta",
+        "Remove the background from any photo for free. Runs entirely in your browser, nothing is uploaded.",
+        "/remove-background") + body +
+        footer(["/assets/tools.js", "/assets/remove-background.js"]))
+
+
+def build_compress_image():
+    body = f"""{nav("/tools/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal" style="font-size:clamp(2rem,6vw,4.6rem);line-height:1.02">Compress image</h1>
+  <p class="reveal" style="--d:.1s">Shrink a photo's file size by quality or to a target size, in
+  JPEG, PNG or WebP. Nothing is uploaded \u2014 it all happens on your device.</p>
+</header>
+
+<div class="calc wrap" id="compress-root">
+  <div class="panel">
+    <h2>Image</h2>
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop an image">
+      <p>Drop an image here, or click to choose one</p>
+      <p class="dz-hint">JPEG, PNG or WebP</p>
+      <p class="dz-filename"></p>
+      <input type="file" accept="image/*">
+    </div>
+    <div class="field" style="margin-top:1.2rem">
+      <label for="format">Output format</label>
+      <div class="control"><select id="format">
+        <option value="jpeg" selected>JPEG</option>
+        <option value="png">PNG</option>
+        <option value="webp">WebP</option>
+      </select></div>
+      <p class="note" id="png-note" hidden>PNG is lossless \u2014 quality has no effect on it. Resize
+      the image instead to shrink a PNG.</p>
+    </div>
+    <div class="toggle">
+      <button type="button" data-mode="quality" aria-pressed="true">By quality</button>
+      <button type="button" data-mode="target" aria-pressed="false">By target size</button>
+    </div>
+    <div class="field" id="quality-field" style="margin-top:1rem">
+      <label for="quality">Quality</label>
+      <input type="range" id="quality" min="1" max="100" value="80">
+    </div>
+    <div class="field" id="target-field" style="margin-top:1rem" hidden>
+      <label for="target-kb">Target size (KB)</label>
+      <div class="control"><input id="target-kb" type="number" min="5" step="10" value="200"></div>
+    </div>
+    <p class="note" id="warn" hidden></p>
+  </div>
+
+  <section class="result" id="compress-result" hidden>
+    <p class="eyebrow">New size</p>
+    <p class="headline-figure" id="r-after" style="font-size:clamp(1.6rem,4vw,2.4rem)">&mdash;</p>
+    <dl class="stats">
+      <div class="stat"><dt>Original size</dt><dd id="r-before">&mdash;</dd></div>
+      <div class="stat"><dt>Change</dt><dd class="pos" id="r-saved">&mdash;</dd></div>
+    </dl>
+    <div class="compare">
+      <figure><figcaption>Original</figcaption><img id="img-before" alt=""></figure>
+      <figure><figcaption>Compressed</figcaption><img id="img-after" alt=""></figure>
+    </div>
+    <button class="btn btn-primary" id="download-btn" type="button" style="margin-top:1.4rem">Download</button>
+  </section>
+</div>
+
+{ad("9999999993")}
+</main>"""
+    write("compress-image.html", head(
+        "Compress image \u2014 free, in your browser \u2014 Moneta",
+        "Compress a JPEG, PNG or WebP image to a target size or quality, for free, entirely in your browser.",
+        "/compress-image") + body +
+        footer(["/assets/tools.js", "/assets/compress-image.js"]))
+
+
+def build_resize_image():
+    body = f"""{nav("/tools/")}
+<main id="main">
+<header class="page-head">
+  <h1 class="display hero-heading reveal" style="font-size:clamp(2rem,6vw,4.6rem);line-height:1.02">Resize image</h1>
+  <p class="reveal" style="--d:.1s">Change an image's pixel dimensions, with the aspect ratio locked
+  or free. Runs entirely in your browser.</p>
+</header>
+
+<div class="calc wrap" id="resize-root">
+  <div class="panel">
+    <h2>Image</h2>
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop an image">
+      <p>Drop an image here, or click to choose one</p>
+      <p class="dz-hint">JPEG or PNG</p>
+      <p class="dz-filename"></p>
+      <input type="file" accept="image/*">
+    </div>
+    <div class="row-2" style="margin-top:1.2rem">
+      <div class="field">
+        <label for="width">Width (px)</label>
+        <div class="control"><input id="width" type="number" min="1" step="1"></div>
+      </div>
+      <div class="field">
+        <label for="height">Height (px)</label>
+        <div class="control"><input id="height" type="number" min="1" step="1"></div>
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:.6em;font-size:.9rem;opacity:.85">
+      <input type="checkbox" id="lock-aspect" checked style="accent-color:var(--mint)">
+      Lock aspect ratio
+    </label>
+    <p class="note" id="warn" hidden></p>
+  </div>
+
+  <section class="result" id="resize-result" hidden>
+    <p class="eyebrow">New dimensions</p>
+    <p class="headline-figure" id="r-dims" style="font-size:clamp(1.6rem,4vw,2.4rem)">&mdash;</p>
+    <div class="compare">
+      <figure><figcaption>Original</figcaption><img id="img-before" alt=""></figure>
+      <figure><figcaption>Resized</figcaption><img id="img-after" alt=""></figure>
+    </div>
+    <button class="btn btn-primary" id="download-btn" type="button" style="margin-top:1.4rem">Download</button>
+  </section>
+</div>
+
+{ad("9999999994")}
+</main>"""
+    write("resize-image.html", head(
+        "Resize image \u2014 free, in your browser \u2014 Moneta",
+        "Resize a JPEG or PNG image to any pixel dimensions, for free, entirely in your browser.",
+        "/resize-image") + body +
+        footer(["/assets/tools.js", "/assets/resize-image.js"]))
 
 
 # ==================================================================== guides
@@ -1214,8 +1416,9 @@ write("404.html", head("Page not found \u2014 Moneta", "That page does not exist
 
 # ================================================================== metadata
 def build_meta():
-    page_urls = ["/", "/loan-calculator", "/income-calculator", "/guides/", "/about", "/contact",
-                 "/privacy", "/terms", "/disclaimer", "/blog/"] + ["/guides/" + a[0] for a in ARTICLES]
+    page_urls = ["/", "/loan-calculator", "/income-calculator", "/guides/", "/tools/", "/about",
+                 "/contact", "/privacy", "/terms", "/disclaimer", "/blog/"] + \
+                ["/guides/" + a[0] for a in ARTICLES] + [t[1] for t in IMAGE_TOOLS]
     url_dates = [(u, TODAY) for u in page_urls] + [
         ("/blog/" + p["slug"], (p.get("publishedAt") or TODAY)[:10]) for p in POSTS
     ]
@@ -1246,6 +1449,7 @@ def build_search_index():
     entries = [{"title": "Moneta — loan and income calculators", "url": "/",
                 "desc": "Free calculators and plain-English guides for loans, pay and saving."}]
     entries += [{"title": t, "url": h, "desc": d} for _, t, h, d in TOOLS]
+    entries += [{"title": t, "url": h, "desc": d} for t, h, d in IMAGE_TOOLS]
     entries += [{"title": t, "url": f"/guides/{s}", "desc": d} for s, t, d, _, _ in ARTICLES]
     entries += [{"title": p["title"], "url": f"/blog/{p['slug']}", "desc": p.get("excerpt", "")}
                 for p in POSTS]
@@ -1266,6 +1470,10 @@ if POSTS:
 build_index()
 build_loan()
 build_income()
+build_tools_index()
+build_remove_background()
+build_compress_image()
+build_resize_image()
 build_guide_index()
 build_blog(POSTS)
 build_meta()

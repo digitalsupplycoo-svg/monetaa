@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blog — Moneta</title>
-<meta name="description" content="Notes on money, calculators and product updates from Moneta.">
-<link rel="canonical" href="https://monetaa.online/blog/">
+<title>Remove image background — free, in your browser — Moneta</title>
+<meta name="description" content="Remove the background from any photo for free. Runs entirely in your browser, nothing is uploaded.">
+<link rel="canonical" href="https://monetaa.online/remove-background">
 <meta name="theme-color" content="#0C0C0C">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Moneta">
-<meta property="og:title" content="Blog — Moneta">
-<meta property="og:description" content="Notes on money, calculators and product updates from Moneta.">
-<meta property="og:url" content="https://monetaa.online/blog/">
+<meta property="og:title" content="Remove image background — free, in your browser — Moneta">
+<meta property="og:description" content="Remove the background from any photo for free. Runs entirely in your browser, nothing is uploaded.">
+<meta property="og:url" content="https://monetaa.online/remove-background">
 <meta property="og:image" content="https://monetaa.online/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Blog — Moneta">
-<meta name="twitter:description" content="Notes on money, calculators and product updates from Moneta.">
+<meta name="twitter:title" content="Remove image background — free, in your browser — Moneta">
+<meta name="twitter:description" content="Remove the background from any photo for free. Runs entirely in your browser, nothing is uploaded.">
 <meta name="twitter:image" content="https://monetaa.online/img/og.png">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/site.webmanifest">
@@ -31,7 +31,7 @@
 <a class="sr" href="#main">Skip to content</a>
 <nav class="nav reveal" style="--ry:-20px">
 <a class="brand" href="/">Moneta</a>
-<ul><li><a href="/loan-calculator">Loans</a></li><li><a href="/income-calculator">Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/tools/">Tools</a></li><li><a href="/about">About</a></li><li><a href="/blog/" aria-current=page>Blog</a></li></ul>
+<ul><li><a href="/loan-calculator">Loans</a></li><li><a href="/income-calculator">Income</a></li><li><a href="/guides/">Guides</a></li><li><a href="/tools/" aria-current=page>Tools</a></li><li><a href="/about">About</a></li><li><a href="/blog/">Blog</a></li></ul>
 <button class="search-trigger" type="button" data-search-trigger aria-label="Search">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -45,13 +45,40 @@
 </div>
 <main id="main">
 <header class="page-head">
-  <h1 class="display hero-heading reveal">Blog</h1>
-  <p class="reveal" style="--d:.1s">Notes on money, calculators and whatever we are building next.</p>
+  <h1 class="display hero-heading reveal" style="font-size:clamp(2rem,6vw,4.6rem);line-height:1.02">Remove background</h1>
+  <p class="reveal" style="--d:.1s">Drop in a photo and get back a transparent PNG. The model
+  downloads once and runs in your browser — the image itself is never sent anywhere.</p>
 </header>
-<div class="grid-cards"><a class="gcard" href="/blog/the-role-of-money-in-our-lives"><div class="body"><h3>The Role of Money in Our Lives</h3><p>Money is a central part of modern life</p></div></a></div>
+
+<div class="wrap" id="bgremove-root" style="max-width:900px">
+  <div class="panel">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop an image">
+      <p>Drop an image here, or click to choose one</p>
+      <p class="dz-hint">JPEG, PNG or WebP</p>
+      <p class="dz-filename"></p>
+      <input type="file" accept="image/*">
+    </div>
+    <div class="progress" id="progress" hidden>
+      <div class="bar"><div class="fill"></div></div>
+      <p class="label"></p>
+    </div>
+    <p class="note" id="warn" hidden></p>
+  </div>
+
+  <section class="result" id="bgremove-result" style="margin-top:clamp(16px,2.4vw,28px)" hidden>
+    <p class="eyebrow">Result size</p>
+    <p class="headline-figure" id="r-size" style="font-size:clamp(1.6rem,4vw,2.4rem)">&mdash;</p>
+    <div class="compare">
+      <figure><figcaption>Original</figcaption><img id="img-before" alt=""></figure>
+      <figure class="checkered"><figcaption>Background removed</figcaption><img id="img-after" alt=""></figure>
+    </div>
+    <button class="btn btn-primary" id="download-btn" type="button" style="margin-top:1.4rem">Download PNG</button>
+  </section>
+</div>
+
 <aside class="ad-slot" aria-label="Advertisement">
 <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5834688335918066"
-     data-ad-slot="7777777777" data-ad-format="auto" data-full-width-responsive="true"></ins>
+     data-ad-slot="9999999992" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
 </aside>
 </main><footer class="footer">
@@ -65,6 +92,6 @@
 not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
 </footer>
 <script src="/assets/site.js" defer></script>
-<script src="/assets/search.js" defer></script>
+<script src="/assets/search.js" defer></script><script src="/assets/tools.js" defer></script><script src="/assets/remove-background.js" defer></script>
 </body>
 </html>
