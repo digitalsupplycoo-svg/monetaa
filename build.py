@@ -140,7 +140,8 @@ def nav(active=""):
 </nav>
 <div class="search-overlay" data-search-overlay>
 <div class="search-box">
-<input type="text" data-search-input placeholder="Search calculators, guides, blog…" autocomplete="off">
+<input type="text" data-search-input placeholder="Search calculators, guides, blog…"
+autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <div class="search-results" data-search-results></div>
 </div>
 </div>"""
