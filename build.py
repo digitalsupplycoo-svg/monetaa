@@ -46,6 +46,48 @@ FOOT = {
 
 ADSENSE_CLIENT = "ca-pub-5834688335918066"   # <- replace after AdSense approval
 
+# Defaults below can be overridden by the "Site settings" singleton in
+# Sanity Studio — these are the fallback values used if that document
+# doesn't exist yet or Sanity can't be reached. Applied immediately below,
+# before any page-building code runs (some pages, e.g. the contact page,
+# are built by direct top-level calls further down this file, not deferred
+# functions, so this has to happen early).
+HERO_HEADING = "MIND YOUR MONEY"
+HERO_SUBTITLE = "free calculators and plain-english guides for loans, pay and saving"
+CONTACT_EMAIL = ""
+
+
+def fetch_site_settings():
+    """Returns the siteSettings singleton dict, or None on any failure —
+    callers must fall back to the existing hardcoded defaults, never fail
+    the build over a Sanity hiccup."""
+    project = os.environ.get("SANITY_API_PROJECT_ID")
+    dataset = os.environ.get("SANITY_API_DATASET", "production")
+    token = os.environ.get("SANITY_API_READ_TOKEN")
+    if not project:
+        return None
+    query = '*[_type=="siteSettings" && _id=="siteSettings"][0]'
+    url = (f"https://{project}.api.sanity.io/v2024-01-01/data/query/{dataset}"
+           f"?query={urllib.parse.quote(query)}")
+    req = urllib.request.Request(url)
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.load(resp)
+        return data.get("result") or None
+    except Exception as e:
+        print("Warning: could not fetch site settings, using defaults:", e)
+        return None
+
+
+_settings = fetch_site_settings()
+if _settings:
+    HERO_HEADING = _settings.get("heroHeading") or HERO_HEADING
+    HERO_SUBTITLE = _settings.get("heroSubtitle") or HERO_SUBTITLE
+    CONTACT_EMAIL = _settings.get("contactEmail") or CONTACT_EMAIL
+    ADSENSE_CLIENT = _settings.get("adsenseClient") or ADSENSE_CLIENT
+
 
 def head(title, desc, path, image="/img/og.png"):
     canon = SITE + path
@@ -77,6 +119,7 @@ def head(title, desc, path, image="/img/og.png"):
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/base.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <a class="sr" href="#main">Skip to content</a>
@@ -214,12 +257,12 @@ def build_index():
   {nav()}
   <div class="hero-mid">
     <div class="hero-title-clip">
-      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">MIND YOUR MONEY</h1>
+      <h1 class="display hero-heading reveal" style="--d:.15s;--ry:40px">{HERO_HEADING}</h1>
     </div>
     <img class="hero-art magnet reveal" style="--d:.6s" data-magnet data-magnet-pad="150"
          data-magnet-strength="3" src="/img/hero-orb.svg" alt="" aria-hidden="true">
     <div class="hero-bottom">
-      <p class="hero-lede reveal" style="--d:.35s;--ry:20px">free calculators and plain-english guides for loans, pay and saving</p>
+      <p class="hero-lede reveal" style="--d:.35s;--ry:20px">{HERO_SUBTITLE}</p>
       <a class="btn btn-primary reveal" style="--d:.5s;--ry:20px" href="/loan-calculator">Open a calculator</a>
     </div>
   </div>
@@ -1291,8 +1334,12 @@ told about, or shown, anything you enter into a calculator. See the
 via the <a href="/contact">contact page</a>.</p>
 """)
 
-simple("contact.html", "Contact Moneta", "How to reach Moneta about corrections, questions or advertising.", "Contact", """
+_contact_email_html = (
+    f'<p><a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a></p>' if CONTACT_EMAIL else ""
+)
+simple("contact.html", "Contact Moneta", "How to reach Moneta about corrections, questions or advertising.", "Contact", f"""
 <p>We appreciate feedback. Found an error? Have a suggestion? Want to advertise with us?</p>
+{_contact_email_html}
 <h2>Corrections and suggestions</h2>
 <p>If you've spotted an error in a calculator or guide, or have a suggestion for something new,
 we want to hear it. Corrections are prioritised \u2014 if a formula is wrong we want to know
