@@ -133,18 +133,7 @@ def nav(active=""):
     return f"""<nav class="nav reveal" style="--ry:-20px">
 <a class="brand" href="/">{BRAND}</a>
 <ul>{links}</ul>
-<button class="search-trigger" type="button" data-search-trigger aria-label="Search">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-</button>
-</nav>
-<div class="search-overlay" data-search-overlay>
-<div class="search-box">
-<input type="text" data-search-input placeholder="Search calculators, guides, blog…"
-autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-<div class="search-results" data-search-results></div>
-</div>
-</div>"""
+</nav>"""
 
 
 def ad(slot, label="Advertisement"):
@@ -171,8 +160,7 @@ def footer(extra_js=""):
 <div class="copyright">&copy; <span data-year>2026</span> {BRAND}. Educational information only,
 not financial advice. See our <a href="/disclaimer">editorial disclaimer</a>.</div>
 </footer>
-<script src="/assets/site.js" defer></script>
-<script src="/assets/search.js" defer></script>{js}
+<script src="/assets/site.js" defer></script>{js}
 </body>
 </html>"""
 
@@ -1493,19 +1481,6 @@ def build_meta():
           '}')
 
 
-def build_search_index():
-    entries = [{"title": "Moneta — loan and income calculators", "url": "/",
-                "desc": "Free calculators and plain-English guides for loans, pay and saving."}]
-    entries += [{"title": t, "url": h, "desc": d} for _, t, h, d in TOOLS]
-    entries += [{"title": t, "url": h, "desc": d} for t, h, d in IMAGE_TOOLS]
-    entries += [{"title": t, "url": f"/guides/{s}", "desc": d} for s, t, d, _, _ in ARTICLES]
-    entries += [{"title": p["title"], "url": f"/blog/{p['slug']}", "desc": p.get("excerpt", "")}
-                for p in POSTS]
-    for href, label in FOOT.get("Site", []):
-        entries.append({"title": label, "url": href, "desc": ""})
-    write("search-index.json", json.dumps(entries, ensure_ascii=False))
-
-
 # fetch blog content once, before any page is written, so nav()/footer() (called
 # by every build_x() below) already see the Blog link and latest posts.
 POSTS = fetch_blog_posts()
@@ -1525,7 +1500,6 @@ build_resize_image()
 build_guide_index()
 build_blog(POSTS)
 build_meta()
-build_search_index()
 _SKIP_DIRS = {"studio", "node_modules", ".git", ".vercel"}
 _file_count = 0
 for _root, _dirs, _files in os.walk(ROOT):
